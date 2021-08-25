@@ -1,52 +1,38 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 public class Player : MonoBehaviour
 {
-    [SerializeField] private float _changeTime;
-    [SerializeField] private int _changeValue;
     [SerializeField] private int _maxHealth;
 
-    private int _targetHealth;
+    private UnityEvent _changedHealth = new UnityEvent();
+
+    public event UnityAction ChangedHealth
+    {
+        add => _changedHealth.AddListener(value);
+        remove => _changedHealth.RemoveListener(value);
+    }
 
     public int CurrentHealth { get; private set; }
     public int MaxHealth { get => _maxHealth; private set => _maxHealth = value; }
 
-    public void ChangeCurrentHealth(int value)
-    {
-        _targetHealth = Mathf.Clamp(_targetHealth + value, 0, MaxHealth);
-        if (_targetHealth == CurrentHealth + value)
-        {
-            StartCoroutine(ChangeHealthSmoothly());
-        }
-    }
-
     public void GetHeal(int value)
     {
-        ChangeCurrentHealth(value);
+        CurrentHealth = Mathf.Clamp(CurrentHealth + value, 0, _maxHealth);
+        _changedHealth?.Invoke();
     }
 
     public void GetDamage(int value)
     {
-        ChangeCurrentHealth(value * -1);
+        CurrentHealth = Mathf.Clamp(CurrentHealth - value, 0, _maxHealth);
+        _changedHealth?.Invoke();
     }
 
     private void Awake()
     {
-        CurrentHealth = MaxHealth;
-        _targetHealth = CurrentHealth;
-    }
-
-    private IEnumerator ChangeHealthSmoothly()
-    {
-        WaitForSeconds endOfSeconds = new WaitForSeconds(_changeTime);
-
-        while (CurrentHealth != _targetHealth)
-        {
-            CurrentHealth = (int)Mathf.MoveTowards(CurrentHealth, _targetHealth, _changeValue);
-            yield return endOfSeconds;
-        }
+        CurrentHealth = _maxHealth;
     }
 }
