@@ -16,6 +16,16 @@ public class HealthBar : MonoBehaviour
     private int _targetHealth;
     private Slider _slider;
 
+    public void GetHeal(int value)
+    {
+        ChangeCurrentHealth(value);
+    }
+
+    public void GetDamage(int value)
+    {
+        ChangeCurrentHealth(value * -1);
+    }
+
     public void ChangeCurrentHealth(int value)
     {
         _targetHealth = Mathf.Clamp(_targetHealth + value, 0, _maxHealth);
