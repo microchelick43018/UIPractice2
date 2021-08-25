@@ -7,15 +7,15 @@ public class HealingButton : MonoBehaviour
 {
     [SerializeField] private int _healValue;
 
-    private HealthBar _playerHealth;
+    private Player _player;
 
     public void OnMouseClick()
     {
-        _playerHealth.GetHeal(_healValue);
+        _player.GetHeal(_healValue);
     }
 
     private void Awake()
     {
-        _playerHealth = GameObject.FindObjectOfType<HealthBar>().GetComponent<HealthBar>();
+        _player = FindObjectOfType<Player>().GetComponent<Player>();
     }
 }

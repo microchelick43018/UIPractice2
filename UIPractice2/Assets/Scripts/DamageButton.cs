@@ -6,15 +6,15 @@ public class DamageButton : MonoBehaviour
 {
     [SerializeField] private int _damageValue;
     
-    private HealthBar _playerHealth;
+    private Player _player;
 
     public void OnMouseClick()
     {
-        _playerHealth.GetDamage(_damageValue);
+        _player.GetDamage(_damageValue);
     }
 
     private void Awake()
     {
-        _playerHealth = GameObject.FindObjectOfType<HealthBar>().GetComponent<HealthBar>();
+        _player = FindObjectOfType<Player>().GetComponent<Player>();
     }
 }

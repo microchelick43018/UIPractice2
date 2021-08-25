@@ -6,39 +6,14 @@ using UnityEngine.Events;
 
 public class HealthBar : MonoBehaviour
 {
-    [SerializeField] private int _maxHealth;
-    [SerializeField] private float _changeTime;
-    [SerializeField] private int _changeValue;
-
     private UnityEvent _changedHealth = new UnityEvent();
     private Text _text;
-    private int _currentHealth;
-    private int _targetHealth;
     private Slider _slider;
-
-    public void GetHeal(int value)
-    {
-        ChangeCurrentHealth(value);
-    }
-
-    public void GetDamage(int value)
-    {
-        ChangeCurrentHealth(value * -1);
-    }
-
-    public void ChangeCurrentHealth(int value)
-    {
-        _targetHealth = Mathf.Clamp(_targetHealth + value, 0, _maxHealth);
-        if (_targetHealth == _currentHealth + value)
-        {
-            StartCoroutine(ChangeHealthSmoothly());
-        }
-    }
-
+    private Player _player;
+  
     private void Awake()
     {
-        _currentHealth = _maxHealth;
-        _targetHealth = _currentHealth;
+        _player = FindObjectOfType<Player>().GetComponent<Player>();
         _slider = GetComponent<Slider>();
         _text = GetComponentInChildren<Text>();
     }
@@ -55,30 +30,18 @@ public class HealthBar : MonoBehaviour
         _changedHealth.RemoveListener(UpdateSlider);
     }
 
-    private void Start()
+    private void Update()
     {
-        _changedHealth?.Invoke();
-    }
-
-    private IEnumerator ChangeHealthSmoothly()
-    {
-        WaitForSeconds endOfSeconds = new WaitForSeconds(_changeTime);
-
-        while (_currentHealth != _targetHealth)
-        {
-            _currentHealth = (int) Mathf.MoveTowards(_currentHealth, _targetHealth, _changeValue);
-            _changedHealth.Invoke();
-            yield return endOfSeconds;
-        }
+        _changedHealth.Invoke();
     }
 
     private void UpdateText()
     {
-        _text.text = $"{_currentHealth} / {_maxHealth}";
+        _text.text = $"{_player.CurrentHealth} / {_player.MaxHealth}";
     }
 
     private void UpdateSlider()
     {
-        _slider.value = (float)_currentHealth / _maxHealth;
-    }
+        _slider.value = (float)_player.CurrentHealth / _player.MaxHealth;
+    }   
 }
